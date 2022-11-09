@@ -12,14 +12,14 @@ import { ProductsService } from './products.service';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
   @Post('add')
-  addProduct(
+  async addProduct(
     //@Body() completeBody : {title : string , description : string , ..... }
     @Body('title') prodTitle: string,
     @Body('description') prodDesc: string,
     @Body('category') prodCategory: string,
     @Body('price') prodPrice: number,
   ) {
-    const generatedProdId = this.productsService.addProduct(
+    const generatedProdId = await this.productsService.addProduct(
       prodTitle,
       prodDesc,
       prodCategory,
@@ -28,24 +28,26 @@ export class ProductsController {
     return { id: generatedProdId };
   }
   @Get()
-  getAllProducts() {
-    return { products: this.productsService.getProducts() };
+  async getAllProducts() {
+    const products = await this.productsService.getProducts();
+    return products;
   }
 
   @Get(':prodId')
   getProduct(@Param('prodId') prodId: string) {
-    return { product: this.productsService.getProduct(prodId) };
+    const product = this.productsService.getProduct(prodId);
+    return product;
   }
 
   @Patch(':prodId')
-  updateProduct(
+  async updateProduct(
     @Param('prodId') prodId: string,
     @Body('title') prodTitle: string,
     @Body('description') prodDesc: string,
     @Body('category') prodCategory: string,
     @Body('price') prodPrice: number,
   ) {
-    this.productsService.updateProduct(
+    await this.productsService.updateProduct(
       prodId,
       prodTitle,
       prodDesc,
@@ -55,8 +57,8 @@ export class ProductsController {
     return { msg: 'Product updated successfull' };
   }
   @Delete(':prodId')
-  removeProduct(@Param('prodId') prodId: string) {
-    this.productsService.deleteProduct(prodId);
+  async removeProduct(@Param('prodId') prodId: string) {
+    await this.productsService.deleteProduct(prodId);
     return { msg: 'Product successfully deleted' };
   }
 }
